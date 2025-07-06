@@ -1,3 +1,4 @@
+
 import type React from 'react';
 
 export type ConnectiviteValue = 'RA' | 'SSc' | 'IIM' | 'MCTD' | 'SjD' | '';
@@ -7,6 +8,7 @@ export type HepaticFunction = 'normal' | 'mild' | 'moderate' | 'severe';
 export type RiskLevel = 'élevé' | 'modéré' | 'faible';
 
 export interface PatientData {
+  patientName: string;
   connectiviteType: ConnectiviteValue;
   hasPID: boolean;
   pidStatus: PIDStatus;

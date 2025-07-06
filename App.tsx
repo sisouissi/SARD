@@ -4,7 +4,7 @@ import PIDConnectivitesDecisionApp from './components/PIDConnectivitesDecisionAp
 
 function App() {
   return (
-    <div className="bg-gray-50">
+    <div>
         <PIDConnectivitesDecisionApp />
     </div>
   );

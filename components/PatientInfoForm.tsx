@@ -1,5 +1,6 @@
+
 import React from 'react';
-import type { PatientData } from '../types';
+import type { PatientData, ConnectiviteValue, PIDStatus, AntiMDA5Status, HepaticFunction } from '../types';
 import { CONNECTIVITE_TYPES, CONTRAINDICATIONS, CURRENT_MEDICATIONS, RISK_FACTORS, SYMPTOMS, ANTI_MDA5_MANIFESTATIONS } from '../constants';
 
 interface PatientInfoFormProps {
@@ -7,26 +8,6 @@ interface PatientInfoFormProps {
   setPatientData: React.Dispatch<React.SetStateAction<PatientData>>;
   onGenerate: () => void;
 }
-
-const CheckboxGroup: React.FC<{title: string, options: string[], checkedItems: string[], onChange: (item: string) => void}> = ({ title, options, checkedItems, onChange }) => (
-    <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">{title}</label>
-        <div className="p-3 bg-white rounded-md border border-gray-200 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2 max-h-48 overflow-y-auto">
-            {options.map(item => (
-                <label key={item} className="flex items-center text-sm cursor-pointer">
-                    <input
-                        type="checkbox"
-                        checked={checkedItems.includes(item)}
-                        onChange={() => onChange(item)}
-                        className="mr-2 h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    {item}
-                </label>
-            ))}
-        </div>
-    </div>
-);
-
 
 const PatientInfoForm: React.FC<PatientInfoFormProps> = ({ patientData, setPatientData, onGenerate }) => {
 
@@ -40,121 +21,153 @@ const PatientInfoForm: React.FC<PatientInfoFormProps> = ({ patientData, setPatie
     });
   };
 
+  const handleSingleSelectChange = (field: keyof PatientData, value: any) => {
+      setPatientData(prev => ({...prev, [field]: value}));
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 className="font-semibold text-blue-900 mb-4 text-lg">1. Informations Générales & Cliniques</h3>
-        
+    <div className="space-y-8">
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h3 className="font-bold text-2xl text-blue-900 mb-4">Informations Patient</h3>
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <div>
+              <label className="block text-base font-medium text-gray-700 mb-2">Nom du Patient</label>
+              <input type="text" value={patientData.patientName} onChange={e => handleSingleSelectChange('patientName', e.target.value)} className="w-full p-3 border border-gray-300 rounded-md text-base" placeholder="ex: Jean Dupont" />
+            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Âge (années)</label>
-              <input type="number" value={patientData.age} onChange={e => setPatientData(d => ({...d, age: e.target.value}))} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" placeholder="ex: 65" />
+              <label className="block text-base font-medium text-gray-700 mb-2">Âge (années)</label>
+              <input type="number" value={patientData.age} onChange={e => handleSingleSelectChange('age', e.target.value)} className="w-full p-3 border border-gray-300 rounded-md text-base" placeholder="ex: 65" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Poids (kg)</label>
-              <input type="number" value={patientData.weight} onChange={e => setPatientData(d => ({...d, weight: e.target.value}))} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500" placeholder="ex: 70" />
+              <label className="block text-base font-medium text-gray-700 mb-2">Poids (kg)</label>
+              <input type="number" value={patientData.weight} onChange={e => handleSingleSelectChange('weight', e.target.value)} className="w-full p-3 border border-gray-300 rounded-md text-base" placeholder="ex: 70" />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Type de connectivite</label>
-            <select value={patientData.connectiviteType} onChange={e => setPatientData(d => ({...d, connectiviteType: e.target.value as PatientData['connectiviteType']}))} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="">Sélectionnez le type</option>
-              {CONNECTIVITE_TYPES.map(type => <option key={type.value} value={type.value}>{type.label} (Risque {type.risk})</option>)}
-            </select>
-          </div>
-          <CheckboxGroup title="Facteurs de risque de PID" options={RISK_FACTORS} checkedItems={patientData.riskFactors} onChange={(item) => handleCheckboxChange('riskFactors', item)} />
-          <CheckboxGroup title="Symptômes évocateurs de PID" options={SYMPTOMS} checkedItems={patientData.currentSymptoms} onChange={(item) => handleCheckboxChange('currentSymptoms', item)} />
         </div>
       </div>
       
-      <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-          <h3 className="font-semibold text-green-900 mb-4 text-lg">2. Statut de la PID</h3>
-           <div className="space-y-4">
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">PID déjà diagnostiquée ?</label>
-                <div className="flex space-x-4">
-                  <label className="flex items-center cursor-pointer"><input type="radio" name="hasPID" checked={patientData.hasPID === true} onChange={() => setPatientData(d => ({...d, hasPID: true}))} className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" /> Oui</label>
-                  <label className="flex items-center cursor-pointer"><input type="radio" name="hasPID" checked={patientData.hasPID === false} onChange={() => setPatientData(d => ({...d, hasPID: false, pidStatus: ''}))} className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" /> Non</label>
-                </div>
+      <div className="bg-blue-50 p-6 rounded-lg">
+        <h3 className="font-bold text-2xl text-blue-900 mb-4">Diagnostic</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-2">Type de connectivite</label>
+            <select value={patientData.connectiviteType} onChange={e => handleSingleSelectChange('connectiviteType', e.target.value as ConnectiviteValue)} className="w-full p-3 border border-gray-300 rounded-md text-base">
+              <option value="">Sélectionnez le type...</option>
+              {CONNECTIVITE_TYPES.map(type => <option key={type.value} value={type.value}>{type.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-2">PID déjà diagnostiquée ?</label>
+            <div className="flex space-x-6">
+              <label className="flex items-center text-base"><input type="radio" name="hasPID" checked={patientData.hasPID === true} onChange={() => handleSingleSelectChange('hasPID', true)} className="mr-2 h-4 w-4" /> Oui</label>
+              <label className="flex items-center text-base"><input type="radio" name="hasPID" checked={patientData.hasPID === false} onChange={() => { handleSingleSelectChange('hasPID', false); handleSingleSelectChange('pidStatus', ''); }} className="mr-2 h-4 w-4" /> Non</label>
             </div>
-
-            {patientData.hasPID && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Évolution de la PID</label>
-                <select value={patientData.pidStatus} onChange={(e) => setPatientData(d => ({...d, pidStatus: e.target.value as PatientData['pidStatus']}))} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white">
-                  <option value="">Sélectionnez le statut</option>
-                  <option value="stable">Stable / Nouveau diagnostic</option>
-                  <option value="progression">Progression malgré traitement</option>
-                  <option value="rapid-progressive">Rapidement progressive (RP-ILD)</option>
-                </select>
-              </div>
-            )}
-           </div>
+          </div>
+          {patientData.hasPID && (
+            <div>
+              <label className="block text-base font-medium text-gray-700 mb-2">Évolution de la PID</label>
+              <select value={patientData.pidStatus} onChange={e => handleSingleSelectChange('pidStatus', e.target.value as PIDStatus)} className="w-full p-3 border border-gray-300 rounded-md text-base">
+                <option value="">Sélectionnez le statut...</option>
+                <option value="stable">Stable / Nouveau diagnostic</option>
+                <option value="progression">Progression</option>
+                <option value="rapid-progressive">RP-ILD</option>
+              </select>
+            </div>
+          )}
+        </div>
       </div>
 
+      <div className="bg-yellow-50 p-6 rounded-lg">
+          <h3 className="font-bold text-2xl text-yellow-900 mb-4">Facteurs de Risque & Symptômes</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                  <h4 className="font-semibold text-gray-800 mb-3 text-lg">Facteurs de risque</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+                      {RISK_FACTORS.map(factor => (
+                          <label key={factor} className="flex items-center text-base"><input type="checkbox" checked={patientData.riskFactors.includes(factor)} onChange={() => handleCheckboxChange('riskFactors', factor)} className="mr-3 h-4 w-4" />{factor}</label>
+                      ))}
+                  </div>
+              </div>
+               <div>
+                  <h4 className="font-semibold text-gray-800 mb-3 text-lg">Symptômes évocateurs</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+                      {SYMPTOMS.map(symptom => (
+                          <label key={symptom} className="flex items-center text-base"><input type="checkbox" checked={patientData.currentSymptoms.includes(symptom)} onChange={() => handleCheckboxChange('currentSymptoms', symptom)} className="mr-3 h-4 w-4" />{symptom}</label>
+                      ))}
+                  </div>
+              </div>
+          </div>
+      </div>
 
       {patientData.connectiviteType === 'IIM' && (
-        <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-            <h3 className="font-semibold text-red-900 mb-4 text-lg">3. Evaluation spécifique Anti-MDA5 (pour Myosite)</h3>
-            <div className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Statut anti-MDA5</label>
-                    <select value={patientData.antiMDA5Status} onChange={e => setPatientData(d => ({...d, antiMDA5Status: e.target.value as PatientData['antiMDA5Status']}))} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white">
-                        <option value="">Sélectionnez le statut</option>
-                        <option value="confirmed">Confirmé positif</option>
-                        <option value="suspected">Suspecté (clinique compatible)</option>
-                        <option value="negative">Négatif</option>
-                        <option value="unknown">Non testé/Inconnu</option>
-                    </select>
+        <div className="bg-red-50 p-6 rounded-lg space-y-6">
+          <h3 className="font-bold text-2xl text-red-900 mb-2">Spécifique Anti-MDA5 (Myosite)</h3>
+          <div>
+            <label className="block text-base font-medium text-gray-700 mb-2">Statut Anti-MDA5</label>
+            <select value={patientData.antiMDA5Status} onChange={e => handleSingleSelectChange('antiMDA5Status', e.target.value as AntiMDA5Status)} className="w-full p-3 border border-gray-300 rounded-md text-base">
+              <option value="">Sélectionnez...</option>
+              <option value="confirmed">Confirmé positif</option>
+              <option value="suspected">Suspecté</option>
+              <option value="negative">Négatif</option>
+              <option value="unknown">Inconnu</option>
+            </select>
+          </div>
+          {(patientData.antiMDA5Status === 'confirmed' || patientData.antiMDA5Status === 'suspected') && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div><label className="block text-base font-medium text-gray-700 mb-2">Ferritine (ng/mL)</label><input type="number" value={patientData.ferritin} onChange={e => handleSingleSelectChange('ferritin', e.target.value)} className="w-full p-3 border border-gray-300 rounded-md text-base" placeholder="ex: 1500" /></div>
+                <div><label className="block text-base font-medium text-gray-700 mb-2">LDH (UI/L)</label><input type="number" value={patientData.ldh} onChange={e => handleSingleSelectChange('ldh', e.target.value)} className="w-full p-3 border border-gray-300 rounded-md text-base" placeholder="ex: 300" /></div>
+                <div><label className="block text-base font-medium text-gray-700 mb-2">CRP (mg/L)</label><input type="number" value={patientData.crp} onChange={e => handleSingleSelectChange('crp', e.target.value)} className="w-full p-3 border border-gray-300 rounded-md text-base" placeholder="ex: 50" /></div>
+              </div>
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-3">Manifestations Cliniques</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+                  {ANTI_MDA5_MANIFESTATIONS.map(manifestation => (
+                    <label key={manifestation} className="flex items-center text-base"><input type="checkbox" checked={patientData.antiMDA5Manifestations.includes(manifestation)} onChange={() => handleCheckboxChange('antiMDA5Manifestations', manifestation)} className="mr-3 h-4 w-4" />{manifestation}</label>
+                  ))}
                 </div>
-                {(patientData.antiMDA5Status === 'confirmed' || patientData.antiMDA5Status === 'suspected') && (
-                    <>
-                        <CheckboxGroup title="Manifestations cliniques évocatrices" options={ANTI_MDA5_MANIFESTATIONS} checkedItems={patientData.antiMDA5Manifestations} onChange={(item) => handleCheckboxChange('antiMDA5Manifestations', item)} />
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Ferritine (ng/mL)</label>
-                                <input type="number" value={patientData.ferritin} onChange={e => setPatientData({...patientData, ferritin: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" placeholder="> 500"/>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">LDH (UI/L)</label>
-                                <input type="number" value={patientData.ldh} onChange={e => setPatientData({...patientData, ldh: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" placeholder="> 280"/>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">CRP (mg/L)</label>
-                                <input type="number" value={patientData.crp} onChange={e => setPatientData({...patientData, crp: e.target.value})} className="w-full p-2 border border-gray-300 rounded-md" placeholder="> 3"/>
-                            </div>
-                        </div>
-                    </>
-                )}
-            </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
-      <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-          <h3 className="font-semibold text-yellow-900 mb-4 text-lg">4. Comorbidités & Traitements</h3>
-          <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-gray-100 p-6 rounded-lg">
+          <h3 className="font-bold text-2xl text-gray-800 mb-4">Comorbidités & Contre-indications</h3>
+          <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Fonction hépatique</label>
-                <select value={patientData.hepaticFunction} onChange={e => setPatientData(d => ({...d, hepaticFunction: e.target.value as PatientData['hepaticFunction']}))} className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 bg-white">
-                    <option value="normal">Normale</option>
-                    <option value="mild">Insuffisance légère</option>
-                    <option value="moderate">Insuffisance modérée</option>
-                    <option value="severe">Insuffisance sévère</option>
+                <label className="block text-base font-medium text-gray-700 mb-2">Fonction hépatique</label>
+                <select value={patientData.hepaticFunction} onChange={e => handleSingleSelectChange('hepaticFunction', e.target.value as HepaticFunction)} className="w-full p-3 border border-gray-300 rounded-md text-base">
+                    <option value="normal">Normale</option><option value="mild">Insuffisance légère</option><option value="moderate">Insuffisance modérée</option><option value="severe">Insuffisance sévère</option>
                 </select>
               </div>
-              <CheckboxGroup title="Contre-indications présentes" options={CONTRAINDICATIONS} checkedItems={patientData.contraindications} onChange={(item) => handleCheckboxChange('contraindications', item)} />
-              <CheckboxGroup title="Traitements de fond actuels/récents" options={CURRENT_MEDICATIONS} checkedItems={patientData.currentMedications} onChange={(item) => handleCheckboxChange('currentMedications', item)} />
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-3">Contre-indications</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+                    {CONTRAINDICATIONS.map(c => <label key={c} className="flex items-center text-base"><input type="checkbox" checked={patientData.contraindications.includes(c)} onChange={() => handleCheckboxChange('contraindications', c)} className="mr-3 h-4 w-4" />{c}</label>)}
+                </div>
+              </div>
           </div>
+        </div>
+        <div className="bg-gray-100 p-6 rounded-lg">
+          <h3 className="font-bold text-2xl text-gray-800 mb-4">Traitements Actuels</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+            {CURRENT_MEDICATIONS.map(med => <label key={med} className="flex items-center text-base"><input type="checkbox" checked={patientData.currentMedications.includes(med)} onChange={() => handleCheckboxChange('currentMedications', med)} className="mr-3 h-4 w-4" />{med}</label>)}
+          </div>
+        </div>
       </div>
       
-      <button
-        onClick={onGenerate}
-        disabled={!patientData.connectiviteType || (patientData.hasPID && !patientData.pidStatus)}
-        className="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-      >
-        Générer les recommandations
-      </button>
+      <div className="pt-4">
+        <button
+          onClick={onGenerate}
+          disabled={!patientData.connectiviteType || (patientData.hasPID && !patientData.pidStatus)}
+          className="w-full bg-blue-600 text-white p-4 rounded-md font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-xl"
+        >
+          Générer les recommandations
+        </button>
+      </div>
     </div>
   );
 };

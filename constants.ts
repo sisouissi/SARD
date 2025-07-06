@@ -1,6 +1,8 @@
+
 import type { PatientData, ConnectiviteInfo, TreatmentDatabase } from './types';
 
 export const INITIAL_PATIENT_DATA: PatientData = {
+    patientName: '',
     connectiviteType: '',
     hasPID: false,
     pidStatus: '',
@@ -119,7 +121,7 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         interactions: ['Vaccins vivants'],
         sideEffects: 'Réactions perfusion, infections, hypogammaglobulinémie',
         monitoring: 'CBC + Ig + sérologies + clinique',
-        notes: 'Efficace dans les myosites et SSc-ILD. Indispensable dans la triple thérapie anti-MDA5.'
+        notes: 'Efficace dans les myosites et SSc-ILD. Pilier de la triple thérapie anti-MDA5.'
     },
     'cyclophosphamide': {
         name: 'Cyclophosphamide',
@@ -130,7 +132,7 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         interactions: ['Allopurinol', 'Phénytoïne'],
         sideEffects: 'Myélosuppression, cystite hémorragique, infertilité, néoplasies',
         monitoring: 'CBC + ECBU + fonction gonadique',
-        notes: 'Réservé aux formes sévères, protocole NIH recommandé. Peut faire partie de la triple thérapie anti-MDA5.'
+        notes: 'Réservé aux formes sévères. Option dans la triple thérapie anti-MDA5.'
     },
     'tocilizumab': {
         name: 'Tocilizumab',
@@ -174,7 +176,7 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         interactions: ['Nombreuses interactions CYP3A4'],
         sideEffects: 'Néphrotoxicité, HTA, tremblements, hirsutisme',
         monitoring: 'Taux + fonction rénale + ionogramme + TA',
-        notes: 'Option importante pour IIM-ILD, notamment dans le cadre de la triple thérapie anti-MDA5.'
+        notes: 'Option majeure pour IIM-ILD, notamment dans la triple thérapie anti-MDA5.'
     },
     'ivig': {
         name: 'Immunoglobulines IV',
@@ -185,7 +187,7 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         interactions: ['Vaccins vivants'],
         sideEffects: 'Réactions perfusion, insuffisance rénale, hémolyse',
         monitoring: 'Fonction rénale + haptoglobine + LDH',
-        notes: 'Traitement d\'appoint utile dans les IIM-ILD sévères et en progression, y compris anti-MDA5.'
+        notes: 'Traitement d\'appoint utile dans les IIM-ILD sévères, y compris anti-MDA5.'
     },
     'methylprednisolone': {
         name: 'Méthylprednisolone IV',
@@ -196,7 +198,7 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         interactions: ['Anticoagulants', 'Antidiabétiques'],
         sideEffects: 'Hyperglycémie, HTA, troubles hydro-électrolytiques',
         monitoring: 'Glycémie + TA + ionogramme',
-        notes: 'Traitement d\'induction indispensable pour les RP-ILD, notamment anti-MDA5.'
+        notes: 'Indispensable en induction pour les RP-ILD, notamment anti-MDA5.'
     },
     'glucocorticoids': {
         name: 'Glucocorticoïdes per os',
@@ -209,4 +211,29 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         monitoring: 'Glycémie + TA + ostéodensitométrie',
         notes: 'À utiliser avec prudence. Dose et durée les plus faibles possible. CONTRE-INDICATION RELATIVE FORTE pour SSc-ILD.'
     }
+};
+
+export const ABBREVIATIONS: { [key: string]: string } = {
+    'PID': 'Pneumopathie Interstitielle Diffuse',
+    'RP-ILD': 'Pneumopathie Interstitielle Diffuse Rapidement Progressive',
+    'ACR': 'American College of Rheumatology',
+    'SARD-ILD': 'PID associée à une connectivite (Systemic Autoimmune Rheumatic Disease)',
+    'MDA5': 'Melanoma Differentiation-Associated protein 5',
+    'PR': 'Polyarthrite Rhumatoïde',
+    'SSc': 'Sclérodermie Systémique',
+    'IIM': 'Myosite Inflammatoire Idiopathique',
+    'MCTD': 'Connectivite Mixte',
+    'SjD': 'Syndrome de Sjögren',
+    'EFR': 'Explorations Fonctionnelles Respiratoires',
+    'CVF': 'Capacité Vitale Forcée',
+    'DLCO': 'Capacité de Diffusion du Monoxyde de Carbone',
+    'HRCT': 'Scanner Thoracique Haute Résolution (High-Resolution Computed Tomography)',
+    'NFS': 'Numération Formule Sanguine',
+    'ECBU': 'Examen Cyto-Bactériologique des Urines',
+    'LDH': 'Lactate Deshydrogenase',
+    'CRP': 'Protéine C-Réactive',
+    'MMF': 'Mycophénolate Mofétil',
+    'TPMT': 'Thiopurine Méthyltransférase',
+    'IVIg': 'Immunoglobulines Intraveineuses',
+    'Anti-TNF': 'Anticorps anti-Tumor Necrosis Factor',
 };
