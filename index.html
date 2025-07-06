@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,6 +21,7 @@
       @media print {
         body {
           background-color: white !important;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         .no-print {
           display: none !important;
@@ -34,13 +34,56 @@
           border: none !important;
           box-shadow: none !important;
           padding: 0 !important;
+          font-size: 10pt;
+          color: #000;
         }
         body * {
           visibility: hidden;
         }
         #printable-area, #printable-area * {
           visibility: visible;
+          color: #000 !important;
+          background-color: transparent !important;
+          box-shadow: none !important;
+          text-shadow: none !important;
+          border-color: #ddd !important;
         }
+        #printable-area a {
+          text-decoration: underline;
+        }
+        #printable-area .rounded-lg, #printable-area .rounded-full, #printable-area .rounded {
+           border-radius: 2px !important;
+        }
+        #printable-area .border, #printable-area .border-l-4 {
+          border: 1px solid #ddd !important;
+        }
+        #printable-area .p-1, #printable-area .p-2, #printable-area .p-3, #printable-area .p-4, #printable-area .p-5 {
+           padding: 0.5rem !important;
+        }
+
+        /* Typography */
+        #printable-area h2 { font-size: 16pt !important; font-weight: bold; margin-bottom: 1rem; border-bottom: 2px solid #333; padding-bottom: 0.5rem; }
+        #printable-area h3 { font-size: 13pt !important; font-weight: bold; margin-bottom: 0.75rem; border-bottom: 1px solid #666; padding-bottom: 0.25rem; }
+        #printable-area h4 { font-size: 11pt !important; font-weight: bold; margin-bottom: 0.5rem; }
+        #printable-area h5 { font-size: 10pt !important; font-weight: bold; }
+        #printable-area p, #printable-area div, #printable-area li, #printable-area span, #printable-area label, #printable-area td, #printable-area th {
+           font-size: 10pt !important;
+        }
+        #printable-area strong, #printable-area b {
+            font-weight: bold !important;
+        }
+        
+        /* Layout helpers */
+        .break-inside-avoid {
+          break-inside: avoid;
+        }
+        #printable-area .md\:columns-2 {
+          column-count: 2;
+          column-gap: 2rem;
+        }
+      }
+      @page {
+        margin: 2cm 1.5cm;
       }
     </style>
   <link rel="stylesheet" href="/index.css">
