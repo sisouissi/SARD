@@ -1,4 +1,3 @@
-
 import type { PatientData, ConnectiviteInfo, TreatmentDatabase } from './types';
 
 export const INITIAL_PATIENT_DATA: PatientData = {
@@ -77,17 +76,26 @@ export const CONTRAINDICATIONS: string[] = [
 ];
 
 export const CURRENT_MEDICATIONS: string[] = [
-    'Méthotrexate',
-    'Léflunomide',
-    'Sulfasalazine',
-    'Hydroxychloroquine',
-    'Anti-TNF',
-    'Tocilizumab',
-    'Rituximab',
     'Abatacept',
+    'Anti-TNF',
+    'Azathioprine',
     'Corticoïdes',
+    'Cyclophosphamide',
+    'Hydroxychloroquine',
+    'Inhibiteurs de la calcineurine',
+    'Inhibiteurs JAK',
+    'IVIg',
+    'Léflunomide',
+    'Méthotrexate',
+    'Mycophénolate mofétil',
+    'Nintédanib',
+    'Pirfénidone',
+    'Rituximab',
+    'Sulfasalazine',
+    'Tocilizumab',
     'Autres immunosuppresseurs'
-];
+].sort();
+
 
 export const TREATMENT_DATABASE: TreatmentDatabase = {
     'mycophenolate': {
@@ -157,7 +165,7 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         notes: 'Antifibrotique, recommandé spécifiquement pour SSc-ILD'
     },
     'jak-inhibitors': {
-        name: 'Inhibiteurs JAK (Tofacitinib, Baricitinib)',
+        name: 'Inhibiteurs JAK',
         dosage: 'Tofacitinib: 5 mg x2/jour, Baricitinib: 2-4 mg/jour',
         administration: 'Per os',
         surveillance: 'NFS, transaminases, lipides, recherche tuberculose',
@@ -168,7 +176,7 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         notes: 'Particulièrement efficace dans les IIM-ILD, y compris anti-MDA5.'
     },
     'calcineurin-inhibitors': {
-        name: 'Inhibiteurs calcineurine (Tacrolimus, Ciclosporine)',
+        name: 'Inhibiteurs de la calcineurine',
         dosage: 'Tacrolimus: 0.1-0.2 mg/kg/jour, Ciclosporine: 3-5 mg/kg/jour',
         administration: 'Per os, en 2 prises',
         surveillance: 'Taux résiduels, créatinine, TA, K+',
@@ -179,7 +187,7 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         notes: 'Option majeure pour IIM-ILD, notamment dans la triple thérapie anti-MDA5.'
     },
     'ivig': {
-        name: 'Immunoglobulines IV',
+        name: 'IVIg',
         dosage: '0.4-1 g/kg/jour x 5 jours, puis mensuel',
         administration: 'IV lente, surveiller surcharge',
         surveillance: 'Fonction rénale, hémolyse',
@@ -194,28 +202,49 @@ export const TREATMENT_DATABASE: TreatmentDatabase = {
         dosage: '500-1000 mg/jour x 3 jours (bolus), puis relais per os',
         administration: 'IV en 60 min',
         surveillance: 'Glycémie, TA, ionogramme',
-        contraindications: ['Infection systémique non contrôlée'],
+        contraindications: ['Infection systémique non contrôlée', 'Ulcère gastroduodénal actif'],
         interactions: ['Anticoagulants', 'Antidiabétiques'],
         sideEffects: 'Hyperglycémie, HTA, troubles hydro-électrolytiques',
         monitoring: 'Glycémie + TA + ionogramme',
         notes: 'Indispensable en induction pour les RP-ILD, notamment anti-MDA5.'
     },
     'glucocorticoids': {
-        name: 'Glucocorticoïdes per os',
+        name: 'Corticoïdes',
         dosage: '0.5-1 mg/kg/jour de prednisone équivalent',
         administration: 'Per os, le matin, en 1 prise',
         surveillance: 'Glycémie, TA, ostéodensitométrie',
-        contraindications: ['CONTRE-INDIQUÉS pour SSc-ILD (sauf cas exceptionnels)'],
+        contraindications: ['CONTRE-INDIQUÉS pour SSc-ILD (sauf cas exceptionnels)', 'Ulcère gastroduodénal actif'],
         interactions: ['Nombreuses interactions'],
         sideEffects: 'Ostéoporose, diabète, HTA, infections, crise rénale sclérodermique',
         monitoring: 'Glycémie + TA + ostéodensitométrie',
         notes: 'À utiliser avec prudence. Dose et durée les plus faibles possible. CONTRE-INDICATION RELATIVE FORTE pour SSc-ILD.'
-    }
+    },
+    'pirfenidone': {
+        name: 'Pirfénidone',
+        dosage: 'Titration jusqu\'à 801 mg x3/jour',
+        administration: 'Per os, avec de la nourriture',
+        surveillance: 'Transaminases avant, puis mensuellement x6 mois, puis tous les 3 mois',
+        contraindications: ['Insuffisance hépatique sévère', 'Insuffisance rénale terminale'],
+        interactions: ['Fluvoxamine', 'Ciprofloxacine'],
+        sideEffects: 'Photosensibilité, rash, troubles digestifs, anorexie',
+        monitoring: 'LFT',
+        notes: 'Antifibrotique, option pour la progression de la PID dans la PR.'
+    },
+    'abatacept': {
+        name: 'Abatacept',
+        dosage: '125 mg SC hebdomadaire ou IV mensuel (selon poids)',
+        administration: 'SC ou IV',
+        surveillance: 'Recherche de tuberculose latente',
+        contraindications: ['Infection active sévère'],
+        interactions: ['Anti-TNF', 'Vaccins vivants'],
+        sideEffects: 'Infections (surtout respiratoires), céphalées, nausées',
+        monitoring: 'QuantiFERON, clinique',
+        notes: 'Option pour PR-PID en première ligne.'
+    },
 };
 
 export const ABBREVIATIONS: { [key: string]: string } = {
     'PID': 'Pneumopathie Interstitielle Diffuse',
-    'RP-ILD': 'Pneumopathie Interstitielle Diffuse Rapidement Progressive',
     'ACR': 'American College of Rheumatology',
     'SARD-ILD': 'PID associée à une connectivite (Systemic Autoimmune Rheumatic Disease)',
     'MDA5': 'Melanoma Differentiation-Associated protein 5',

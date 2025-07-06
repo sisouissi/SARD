@@ -21,7 +21,18 @@ const PatientInfoForm: React.FC<PatientInfoFormProps> = ({ patientData, setPatie
   };
 
   const handleSingleSelectChange = (field: keyof PatientData, value: any) => {
-      setPatientData(prev => ({...prev, [field]: value}));
+      setPatientData(prev => {
+        const newData = { ...prev, [field]: value };
+        
+        if (field === 'hepaticFunction' && value === 'severe') {
+            const contraindication = 'Insuffisance hépatique sévère';
+            if (!newData.contraindications.includes(contraindication)) {
+                newData.contraindications = [...newData.contraindications, contraindication];
+            }
+        }
+
+        return newData;
+      });
   };
 
   return (
@@ -70,7 +81,7 @@ const PatientInfoForm: React.FC<PatientInfoFormProps> = ({ patientData, setPatie
                 <option value="">Sélectionnez le statut...</option>
                 <option value="stable">Stable / Nouveau diagnostic</option>
                 <option value="progression">Progression</option>
-                <option value="rapid-progressive">RP-ILD</option>
+                <option value="rapid-progressive">Rapidement progressive</option>
               </select>
             </div>
           )}

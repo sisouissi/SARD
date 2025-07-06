@@ -1,4 +1,3 @@
-
 import type React from 'react';
 
 export type ConnectiviteValue = 'RA' | 'SSc' | 'IIM' | 'MCTD' | 'SjD' | '';
@@ -53,7 +52,8 @@ export interface RecommendedTreatment {
   primary: string;
   secondary?: string[];
   alternatives?: string[];
-  combination?: 'triple' | 'double';
+  combinationText?: string;
+  referral?: string;
   urgency: boolean;
   contraindicated?: string[];
   additional?: string[];
@@ -62,6 +62,7 @@ export interface RecommendedTreatment {
   antiMDA5Specific?: boolean;
   enhanced?: boolean;
   monitoring?: 'intensive';
+  glucocorticoidsNote?: 'strong-against' | 'conditional-against';
 }
 
 export interface Recommendation {

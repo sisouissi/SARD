@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { PatientData } from '../types';
 import { CONNECTIVITE_TYPES } from '../constants';
@@ -39,7 +40,7 @@ const PatientSummary: React.FC<PatientSummaryProps> = ({ patientData }) => {
     const pidStatusLabels: { [key: string]: string } = {
         'stable': 'Stable / Nouveau diagnostic',
         'progression': 'Progression',
-        'rapid-progressive': 'RP-ILD'
+        'rapid-progressive': 'Rapidement progressive'
     };
     
     const antiMDA5StatusLabels: { [key: string]: string } = {

@@ -1,4 +1,3 @@
-
 import type { PatientData, RecommendedTreatment, Recommendation, RiskLevel, AntiMDA5PrognosticAssessment } from '../types';
 import { CONNECTIVITE_TYPES, TREATMENT_DATABASE } from '../constants';
 import { 
@@ -45,7 +44,7 @@ export const getAntiMDA5PrognosticAssessment = (patientData: PatientData): AntiM
 
     if (patientData.pidStatus === 'rapid-progressive') {
       riskScore += 3;
-      riskFactors.push('PID rapidement progressive (RP-ILD)');
+      riskFactors.push('PID rapidement progressive');
     }
 
     let prognosticLevel: 'Très mauvais' | 'Mauvais' | 'Réservé' | 'Bon';
@@ -176,16 +175,66 @@ export const getRecommendedTreatment = (patientData: PatientData): RecommendedTr
       if (isAntiMDA5) urgencyLevel = 'critical';
       if (antiMDA5Assessment && antiMDA5Assessment.riskScore >= 6) urgencyLevel = 'extreme';
 
+      const combinationText = isAntiMDA5
+          ? "Triple thérapie (corticoïdes + 2 autres agents) recommandée d'emblée."
+          : "Thérapie combinée (double ou triple) recommandée par rapport à une monothérapie.";
+
       return {
         primary: 'methylprednisolone',
         secondary: ['rituximab', 'cyclophosphamide', 'calcineurin-inhibitors', 'jak-inhibitors', 'ivig'],
-        combination: isAntiMDA5 ? 'triple' : 'double',
+        combinationText,
+        referral: "Orientation précoce pour évaluation en vue d'une transplantation pulmonaire.",
         urgency: true,
         urgencyLevel: urgencyLevel,
         antiMDA5Specific: isAntiMDA5,
       };
     }
     
+    if (pidStatus === 'progression') {
+        let options: string[] = [];
+        let glucocorticoidsNote: RecommendedTreatment['glucocorticoidsNote'] = 'conditional-against';
+        let referral: string | undefined = "Orientation pour une évaluation en vue d'une transplantation pulmonaire.";
+
+        switch (connectiviteType) {
+            case 'SSc':
+                options = ['mycophenolate', 'rituximab', 'nintedanib', 'tocilizumab', 'cyclophosphamide'];
+                glucocorticoidsNote = 'strong-against';
+                referral = "Orientation vers un centre expert pour discuter d'une greffe de cellules souches (AHSCT) ET évaluation pour transplantation pulmonaire.";
+                break;
+            case 'IIM':
+                options = ['mycophenolate', 'rituximab', 'calcineurin-inhibitors', 'nintedanib', 'cyclophosphamide', 'ivig', 'jak-inhibitors'];
+                break;
+            case 'MCTD':
+                options = ['mycophenolate', 'rituximab', 'nintedanib', 'tocilizumab', 'cyclophosphamide', 'ivig'];
+                break;
+            case 'RA':
+                options = ['mycophenolate', 'rituximab', 'nintedanib', 'tocilizumab', 'cyclophosphamide', 'pirfenidone'];
+                break;
+            case 'SjD':
+                options = ['mycophenolate', 'rituximab', 'nintedanib', 'cyclophosphamide'];
+                break;
+            default:
+              return null;
+        }
+
+        const currentMedicationKeys = Object.entries(TREATMENT_DATABASE)
+            .filter(([, treatment]) => patientData.currentMedications.includes(treatment.name))
+            .map(([key]) => key);
+
+        const availableOptions = options.filter(opt => !currentMedicationKeys.includes(opt));
+        
+        const finalOptions = availableOptions.length > 0 ? availableOptions : options;
+
+        return {
+            primary: finalOptions[0],
+            alternatives: finalOptions.slice(1),
+            urgency: false,
+            glucocorticoidsNote: glucocorticoidsNote,
+            referral,
+            antiMDA5Specific: (connectiviteType === 'IIM' && (antiMDA5Status === 'confirmed' || antiMDA5Status === 'suspected')),
+        };
+    }
+
     if (connectiviteType === 'IIM' && (antiMDA5Status === 'confirmed' || antiMDA5Status === 'suspected') && pidStatus === 'stable') {
       return {
           primary: 'mycophenolate',
@@ -198,37 +247,10 @@ export const getRecommendedTreatment = (patientData: PatientData): RecommendedTr
       };
     }
 
-    if (pidStatus === 'progression') {
-        const options = ['rituximab', 'cyclophosphamide', 'nintedanib'];
-        if(!patientData.currentMedications.includes('Mycophénolate mofétil')) {
-            options.unshift('mycophenolate');
-        }
-
-        if (connectiviteType === 'RA') options.push('abatacept'); 
-        if (['SSc', 'MCTD', 'RA'].includes(connectiviteType)) options.push('tocilizumab');
-        if (connectiviteType === 'IIM') {
-            options.push('calcineurin-inhibitors', 'jak-inhibitors');
-            if (antiMDA5Status === 'confirmed' || antiMDA5Status === 'suspected') {
-                const rtxIndex = options.indexOf('rituximab');
-                if (rtxIndex > -1) {
-                    options.splice(rtxIndex, 1);
-                    options.unshift('rituximab');
-                }
-            }
-        }
-        
-        return {
-            primary: options[0] || 'mycophenolate',
-            alternatives: options.slice(1),
-            urgency: false,
-            antiMDA5Specific: antiMDA5Status === 'confirmed' || antiMDA5Status === 'suspected',
-        };
-    }
-
     const firstLineOptions: { [key: string]: RecommendedTreatment } = {
         'SSc': { primary: 'mycophenolate', alternatives: ['nintedanib', 'cyclophosphamide', 'tocilizumab', 'rituximab'], contraindicated: ['glucocorticoids'], urgency: false },
         'IIM': { primary: 'mycophenolate', alternatives: ['azathioprine', 'rituximab', 'calcineurin-inhibitors', 'jak-inhibitors'], additional: ['glucocorticoids'], urgency: false },
-        'RA': { primary: 'mycophenolate', alternatives: ['azathioprine', 'rituximab', 'abatacept', 'cyclophosphamide'], additional: ['glucocorticoids'], urgency: false },
+        'RA': { primary: 'mycophenolate', alternatives: ['azathioprine', 'rituximab', 'cyclophosphamide'], additional: ['glucocorticoids'], urgency: false },
         'MCTD': { primary: 'mycophenolate', alternatives: ['azathioprine', 'rituximab', 'cyclophosphamide', 'tocilizumab'], additional: ['glucocorticoids'], urgency: false },
         'SjD': { primary: 'mycophenolate', alternatives: ['azathioprine', 'rituximab', 'cyclophosphamide'], additional: ['glucocorticoids'], urgency: false }
     };
